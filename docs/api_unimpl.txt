@@ -1,0 +1,66 @@
+user
+POST /user/<id> # Create a user
+PUT /user/<id> # Update a user
+DELETE /user/<id> # Delete a user
+
+Authors
+PUT /person		# Update an author
+DELETE /person	# Delete an author
+
+Assessments
+PUT /assessment	# Update
+DELETE /assessment	# Delete
+
+Submission
+PUT/submission/<id>	# Update submission
+DELETE/submission/<id>	# Delete submission
+
+Results
+
+Person {
+	"id": Int
+	"name": String
+}
+
+Assessment {
+	id: Int
+	name: String
+	ctime: String
+	mtime: String
+	owner: {
+		id: Int
+		name: String
+	}
+	rubric: Document
+	criteria: [Criterion]
+	submissions: ???
+}
+
+Criterion {
+	id: Int
+	name: String
+	min: Int
+	max: Int
+}
+
+Submission {
+	id: int
+	ctime: String
+	mtime: String
+	assessment: {
+		id: Int
+		name: String
+	}
+    authors: [Person]
+    attachments: [Document]
+}
+
+Result {
+	criterion: Criterion
+	value: Int
+	marker: {
+		id: Int
+		name: String
+	}
+	marked: String
+}

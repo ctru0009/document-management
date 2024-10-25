@@ -1,0 +1,135 @@
+@startuml
+' hide the spot
+hide circle
+' avoid problems with angled crows feet
+skinparam linetype ortho
+' Adjust horizontal spacing
+skinparam nodesep 100
+
+
+entity user {
+  * user_id : number <<generated>
+  ---
+  * user_email : text <<unique>>
+  * user_name : text
+  * user_password : text
+}
+note right of user::user_password
+  Salted and hashed password
+end note
+
+entity document {
+  * document_id : number <<generated>>
+  ---
+  * document_name : text
+  * document_owner : number <<FK>>
+  * document_uploaded : datetime
+  * document_mime : text
+  * document_filesystem_name : text <<unique>>
+  * document_filesystem_size : number
+}
+document }o..|| user : owns
+
+entity assessment {
+  * assessment_id : number <<generated>>
+  ---
+  * assessment_name : text
+  * assessment_rubric : number <<FK>>
+  * assessment_owner : number <<FK>>
+  * assessment_created : datetime
+  assessment_modified : datetime
+}
+note top
+  This is the task itself, not a submission,
+  which is the deliverable for an assessment.
+end note
+document |o..o{ assessment : has
+assessment }o..|| user : owns
+
+entity criterion {
+  * criterion_id : number <<generated>>
+  ---
+  * assessment_id : number <<FK>>
+  * criterion_name : text
+  * criterion_min : number
+  * criterion_max : number
+}
+assessment ||..o{ criterion : has
+
+entity submission {
+  * submission_id number <<generated>>
+  ---
+  * assessment_id : number <<FK>>
+  * submission_submitted : datetime
+  submission_modified : datetime
+  submission_feedback : text
+}
+assessment ||..o{ submission : has
+
+entity author {
+  * author_id : number <<generated>>
+  ---
+  * author_name : text
+}
+
+entity submission_author {
+  * submission_id : number <<FK>>
+  * author_id : number <<FK>>
+}
+submission ||--|{ submission_author : has
+author ||--o{ submission_author : is
+
+entity submission_attachment {
+  * submission_id : number <<FK>>
+  * document_id : number <<FK>>
+}
+submission ||..|{ submission_attachment : has
+document ||..o| submission_attachment : is
+
+entity result {
+  * submission_id : number <<FK>>
+  * criterion_id : number <<FK>>
+--
+  * result_value : number
+  * marker_id : number <<FK>>
+  * result_marked : datetime
+  result_comment : text
+}
+result }o--|| criterion : is
+result }o--|| submission : has
+result }o..|| user : owns
+
+
+' Hidden arrows to control layout
+assessment -[hidden]r-> submission
+submission -[hidden]d-> submission_attachment
+submission -[hidden]d-> submission_author
+submission_attachment -[hidden]d-> document
+submission_author -[hidden]d-> author
+assessment -[hidden]d-> criterion
+submission -[hidden]d-> result
+criterion -[hidden]r-> result
+result -[hidden]r-> submission_attachment
+
+' together {  
+'     entity EVENT_LOG {
+'       * event_id : number <<generated>>
+'       ---
+'       * user_id : number <<FK>>
+'       * event_time : datetime
+'       * event_action : text
+'       * event_object_type : text
+'       * event_object_id : number 
+'     }
+'     EVENT_LOG }o..|| USER
+'     note right of EVENT_LOG::event_action
+'       One of create, update or delete
+'     end note
+'     note right of EVENT_LOG::event_object_type
+'       Type of the entity affected by the event
+'     end note
+'     note right of EVENT_LOG::event_object_id
+'       Primary key of the entity affected by the event
+'     end note
+'   }  
+@enduml

@@ -1,0 +1,17 @@
+@import 'tailwindcss/base';
+
+@import 'tailwindcss/components';
+
+@import 'tailwindcss/utilities';
+
+/* @media (min-width: 640px) {
+    .hero {
+      padding: 20px;
+    }
+  }
+  
+@media (min-width: 768px) {
+    .hero h1 {
+      font-size: 3rem;
+    }
+  } */
